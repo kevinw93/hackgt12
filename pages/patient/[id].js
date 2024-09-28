@@ -1,3 +1,5 @@
+import './globals.css'
+
 import React, { useState } from 'react'; // Ensure React and useState are imported
 import { useRouter } from 'next/router';
 
