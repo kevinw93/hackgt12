@@ -1,5 +1,5 @@
 "use client"; // Ensure the component is rendered on the client side
-
+import './globals.css'
 import { useState } from 'react';
 
 export default function Login() {
@@ -11,12 +11,27 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // Simulate login validation
-    if (email === 'user@example.com' && password === 'password123') {
-      // Redirect to dashboard using window.location
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }), // Sending email and password
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message); // Handle error response
+      }
+
+      // Successful login
+      const data = await response.json();
+      console.log(data.message); // Log success message
+      // Redirect to dashboard
       window.location.href = '/dashboard';
-    } else {
-      setError('Invalid credentials. Please try again.');
+    } catch (err: any) {
+      setError(err.message); // Display error message
     }
   };
 

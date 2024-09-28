@@ -1,20 +1,33 @@
-import './globals.css'
-
-import React, { useState } from 'react'; // Ensure React and useState are imported
+import './globals.css';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 const PatientDetails = () => {
   const router = useRouter();
   const { id } = router.query; // Get the dynamic route parameter
+  const [patient, setPatient] = useState(null); // State to hold patient data
+  const [loading, setLoading] = useState(true); // State to manage loading
 
-  // Mock data or fetch patient details based on the id
-  const patientData = {
-    1: { name: 'John Doe', age: 30, condition: 'Healthy', details: 'No health issues' },
-    2: { name: 'Jane Smith', age: 40, condition: 'Diabetes', details: 'Requires regular check-ups' },
-  };
+  // Fetch patient details based on the id
+  useEffect(() => {
+    const fetchPatient = async () => {
+      if (!id) return; // Return if id is not available
+      try {
+        const response = await fetch(`/api/patient/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch patient details');
+        }
+        const data = await response.json();
+        setPatient(data); // Set the fetched patient data
+      } catch (error) {
+        console.error('Error fetching patient:', error);
+      } finally {
+        setLoading(false); // Set loading to false after fetch
+      }
+    };
 
-  // Retrieve the patient data for the given id
-  const patient = patientData[id] || {};
+    fetchPatient();
+  }, [id]); // Run effect whenever id changes
 
   // State for file uploads
   const [mriFile, setMriFile] = useState(null);
@@ -34,16 +47,17 @@ const PatientDetails = () => {
     console.log('Uploading files:', { mriFile, rnaFile, wsiFile });
   };
 
+  if (loading) return <p>Loading...</p>; // Show loading state
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl font-bold text-gray-900">Patient Details</h1>
-        {patient.name ? (
+        {patient ? (
           <div>
             <h2 className="text-xl">{patient.name}</h2>
             <p>Age: {patient.age}</p>
-            <p>Condition: {patient.condition}</p>
-            <p>Details: {patient.details}</p>
+            <p>Condition: {patient.details}</p> {/* Using details instead of condition */}
 
             {/* File Upload Section */}
             <div className="mt-6">

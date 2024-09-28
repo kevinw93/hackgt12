@@ -1,5 +1,4 @@
 import './globals.css'
-
 import { useState } from 'react';
 
 export default function AddPatient() {
@@ -7,13 +6,31 @@ export default function AddPatient() {
   const [age, setAge] = useState('');
   const [condition, setCondition] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle patient submission logic (e.g., POST request to backend API)
-    console.log({ name, age, condition });
     
-    // After submission, redirect back to the dashboard
-    window.location.href = '/dashboard'; // Example redirection after form submission
+    // Prepare patient data
+    const patientData = { name, age: parseInt(age), condition };
+
+    try {
+      const response = await fetch('/api/add-patient', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(patientData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add patient');
+      }
+
+      // Redirect back to the dashboard after successful submission
+      window.location.href = '/dashboard'; 
+    } catch (error) {
+      console.error('Error adding patient:', error);
+      // Optionally, you could show an error message to the user here
+    }
   };
 
   return (

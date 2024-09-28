@@ -1,15 +1,33 @@
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import './globals.css'
 
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-
 export default function Dashboard() {
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
-  const [patients, setPatients] = useState([
-    { id: 1, name: 'John Doe', age: 30, condition: 'Healthy' },
-    { id: 2, name: 'Jane Smith', age: 40, condition: 'Diabetes' },
-  ]);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch patients from the API
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch('/api/patients');
+        if (!response.ok) {
+          throw new Error('Failed to fetch patients');
+        }
+        const data = await response.json();
+        console.log(data); // Log the fetched data to verify structure
+        setPatients(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -20,12 +38,17 @@ export default function Dashboard() {
   };
 
   const handleViewDetails = (id) => {
-    router.push(`/patient/${id}`); // Redirect to the patient's details page
+    console.log("Viewing details for patient ID:", id); // Log the ID being passed
+    router.push(`/patient/${id}`);
   };
 
   const filteredPatients = patients.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return <div className="min-h-screen bg-gray-100 p-6">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -61,12 +84,12 @@ export default function Dashboard() {
                       {patient.name}
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      Age: {patient.age} | Condition: {patient.condition}
+                      Age: {patient.age} | Details: {patient.details}
                     </p>
                   </div>
                   <div>
                     <button 
-                      onClick={() => handleViewDetails(patient.id)} // Add onClick handler
+                      onClick={() => handleViewDetails(patient.id)} // Ensure patient.id is correctly passed
                       className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600"
                     >
                       View Details
