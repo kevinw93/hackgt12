@@ -11,9 +11,9 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // Simple login validation for testing
+    // Simulate a simple login check
     if (email === 'user@example.com' && password === 'password123') {
-      // Redirect to dashboard
+      // Redirect to dashboard after login
       router.push('/dashboard');
     } else {
       setError('Invalid credentials. Please try again.');

@@ -1,13 +1,12 @@
-import Image from "next/image";
+// app/page.tsx
+"use client"; // Ensure the component is rendered on the client side
 
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,8 +14,8 @@ export default function Login() {
 
     // Simulate login validation
     if (email === 'user@example.com' && password === 'password123') {
-      // Redirect to dashboard after successful login
-      router.push('/dashboard');
+      // Redirect to dashboard using window.location
+      window.location.href = '/dashboard';
     } else {
       setError('Invalid credentials. Please try again.');
     }
