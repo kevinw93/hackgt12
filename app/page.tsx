@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client"; // Ensure the component is rendered on the client side
 
 import { useState } from 'react';
